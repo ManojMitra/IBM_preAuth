@@ -93,33 +93,17 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 }
 
 func (t *SimpleChaincode) writeDummyProvider(stub shim.ChaincodeStubInterface) ([]byte, error) {
-	prov := &Provider{"John Smith", "XYZ Capitol avenue NY", "22322", "112-223-22222", "112-223-22223", "Susan Smith"}
-	jsonAsBytes, _ := json.Marshal(prov)
-	err := stub.PutState("PR001", jsonAsBytes)
-	if err != nil {
-		return nil, err
-	}
+	a := []string{"John Smith", "XYZ Capitol avenue NY", "22322", "112-223-22222", "112-223-22223", "Susan Smith"}
+	t.write(stub, a)
 
-	prov = &Provider{"Steven Foss", "ABC Capitol avenue NY", "22321", "112-223-33333", "112-223-33334", "Susan Smith"}
-	jsonAsBytes, _ = json.Marshal(prov)
-	err = stub.PutState("PR002", jsonAsBytes)
-	if err != nil {
-		return nil, err
-	}
+	b := []string{"Steven Foss", "ABC Capitol avenue NY", "22321", "112-223-33333", "112-223-33334", "Susan Smith"}
+	t.write(stub, b)
 
-	prov = &Provider{"Tad Harison", "ABC Capitol avenue NY", "22323", "112-223-33344", "112-223-33345", "Robert Smith"}
-	jsonAsBytes, _ = json.Marshal(prov)
-	err = stub.PutState("PR003", jsonAsBytes)
-	if err != nil {
-		return nil, err
-	}
+	c := []string{"Tad Harison", "ABC Capitol avenue NY", "22323", "112-223-33344", "112-223-33345", "Robert Smith"}
+	t.write(stub, c)
 
-	prov = &Provider{"Albert", "ABC Capitol avenue NY", "22323", "112-223-33355", "112-223-33356", "Robert Smith"}
-	jsonAsBytes, _ = json.Marshal(prov)
-	err = stub.PutState("PR004", jsonAsBytes)
-	if err != nil {
-		return nil, err
-	}
+	d := []string{"Albert", "ABC Capitol avenue NY", "22323", "112-223-33355", "112-223-33356", "Robert Smith"}
+	t.write(stub, d)
 
 	return nil, nil
 }
@@ -130,7 +114,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 
 	// Handle different functions
 	if function == "write" {
-		return t.write(stub, "write", args)
+		return t.write(stub, args)
 	}
 
 	fmt.Println("invoke did not find func: " + function) //error
@@ -149,87 +133,9 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	return nil, errors.New("Received unknown function query: " + function)
 }
 
-// Add structure
-func (t *SimpleChaincode) writeStruct(stub shim.ChaincodeStubInterface, structName string, args []string) ([]byte, error) {
-	fmt.Println("Write called for " + structName)
-	var key string
-
-	if structName == "writeProvider" {
-		if len(args) == 6 {
-			key = "PRO" + strconv.Itoa(rand.Intn(1000))
-			fmt.Println("Provider Key is: " + key)
-
-			pt := &Provider{args[0], args[1], args[2], args[3], args[4], args[5]}
-
-			jsonAsBytes, _ := json.Marshal(pt)
-			err := stub.PutState(key, jsonAsBytes)
-			if err != nil {
-				jsonResp := "{\"Error\":\"Failed to perform operation}"
-				return nil, errors.New(jsonResp)
-			}
-			fmt.Println("Provider added successfully with key: " + key)
-		} else {
-			return nil, errors.New("Incorrect number of arguments. Expecting 6")
-		}
-	} else if structName == "writeMember" {
-		if len(args) == 4 {
-			key = "MEM" + strconv.Itoa(rand.Intn(1000))
-			fmt.Println("Member Key is: " + key)
-
-			mem := &Member{args[0], args[1], args[2], args[3]}
-
-			jsonAsBytes, _ := json.Marshal(mem)
-			err := stub.PutState(key, jsonAsBytes)
-			if err != nil {
-				jsonResp := "{\"Error\":\"Failed to perform operation}"
-				return nil, errors.New(jsonResp)
-			}
-			fmt.Println("Member added successfully with key: " + key)
-		} else {
-			return nil, errors.New("Incorrect number of arguments. Expecting 4")
-		}
-	} else if structName == "writeService" {
-		if len(args) == 12 {
-			key = "SRV" + strconv.Itoa(rand.Intn(1000))
-			fmt.Println("Service Key is: " + key)
-
-			srv := &Service{args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11]}
-
-			jsonAsBytes, _ := json.Marshal(srv)
-			err := stub.PutState(key, jsonAsBytes)
-			if err != nil {
-				jsonResp := "{\"Error\":\"Failed to perform operation}"
-				return nil, errors.New(jsonResp)
-			}
-			fmt.Println("Member added successfully with key: " + key)
-		} else {
-			return nil, errors.New("Incorrect number of arguments. Expecting 12")
-		}
-	} else if structName == "writePayer" {
-		if len(args) == 9 {
-			key = "PYR" + strconv.Itoa(rand.Intn(1000))
-			fmt.Println("Service Key is: " + key)
-
-			pyr := &Payer{args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]}
-
-			jsonAsBytes, _ := json.Marshal(pyr)
-			err := stub.PutState(key, jsonAsBytes)
-			if err != nil {
-				jsonResp := "{\"Error\":\"Failed to perform operation}"
-				return nil, errors.New(jsonResp)
-			}
-			fmt.Println("Member added successfully with key: " + key)
-		} else {
-			return nil, errors.New("Incorrect number of arguments. Expecting 9")
-		}
-	}
-
-	return []byte(key), nil
-}
-
 // Add to chaincode
-func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
-	fmt.Println("Write called for " + function)
+func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	//fmt.Println("Write called with args " + string(args))
 	var key, jsonResp string
 	var err error
 	var rcvdKey, chaincodeObj []byte
@@ -316,7 +222,85 @@ func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, function strin
 	err = stub.PutState(key, jsonAsBytes)
 
 	if err != nil {
-		return nil, errors.New("Received unknown function invocation: " + function)
+		return nil, errors.New("Received unknown function invocation: ")
+	}
+
+	return []byte(key), nil
+}
+
+// Add structure
+func (t *SimpleChaincode) writeStruct(stub shim.ChaincodeStubInterface, structName string, args []string) ([]byte, error) {
+	fmt.Println("Write called for " + structName)
+	var key string
+
+	if structName == "writeProvider" {
+		if len(args) == 6 {
+			key = "PRO" + strconv.Itoa(rand.Intn(1000))
+			fmt.Println("Provider Key is: " + key)
+
+			pt := &Provider{args[0], args[1], args[2], args[3], args[4], args[5]}
+
+			jsonAsBytes, _ := json.Marshal(pt)
+			err := stub.PutState(key, jsonAsBytes)
+			if err != nil {
+				jsonResp := "{\"Error\":\"Failed to perform operation}"
+				return nil, errors.New(jsonResp)
+			}
+			fmt.Println("Provider added successfully with key: " + key)
+		} else {
+			return nil, errors.New("Incorrect number of arguments. Expecting 6")
+		}
+	} else if structName == "writeMember" {
+		if len(args) == 4 {
+			key = "MEM" + strconv.Itoa(rand.Intn(1000))
+			fmt.Println("Member Key is: " + key)
+
+			mem := &Member{args[0], args[1], args[2], args[3]}
+
+			jsonAsBytes, _ := json.Marshal(mem)
+			err := stub.PutState(key, jsonAsBytes)
+			if err != nil {
+				jsonResp := "{\"Error\":\"Failed to perform operation}"
+				return nil, errors.New(jsonResp)
+			}
+			fmt.Println("Member added successfully with key: " + key)
+		} else {
+			return nil, errors.New("Incorrect number of arguments. Expecting 4")
+		}
+	} else if structName == "writeService" {
+		if len(args) == 12 {
+			key = "SRV" + strconv.Itoa(rand.Intn(1000))
+			fmt.Println("Service Key is: " + key)
+
+			srv := &Service{args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11]}
+
+			jsonAsBytes, _ := json.Marshal(srv)
+			err := stub.PutState(key, jsonAsBytes)
+			if err != nil {
+				jsonResp := "{\"Error\":\"Failed to perform operation}"
+				return nil, errors.New(jsonResp)
+			}
+			fmt.Println("Member added successfully with key: " + key)
+		} else {
+			return nil, errors.New("Incorrect number of arguments. Expecting 12")
+		}
+	} else if structName == "writePayer" {
+		if len(args) == 9 {
+			key = "PYR" + strconv.Itoa(rand.Intn(1000))
+			fmt.Println("Service Key is: " + key)
+
+			pyr := &Payer{args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]}
+
+			jsonAsBytes, _ := json.Marshal(pyr)
+			err := stub.PutState(key, jsonAsBytes)
+			if err != nil {
+				jsonResp := "{\"Error\":\"Failed to perform operation}"
+				return nil, errors.New(jsonResp)
+			}
+			fmt.Println("Member added successfully with key: " + key)
+		} else {
+			return nil, errors.New("Incorrect number of arguments. Expecting 9")
+		}
 	}
 
 	return []byte(key), nil
