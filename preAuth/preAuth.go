@@ -220,13 +220,19 @@ func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string)
 	} else {
 		return nil, errors.New("Incorrect number of arguments received.")
 	}
-	jsonAsBytes, _ := json.Marshal(preAuth)
+	jsonAsBytes, err1 := json.Marshal(preAuth)
+	if err1 != nil {
+		jsonResp := "{\"Error\":\"Failed to perform operation}"
+		return nil, errors.New(jsonResp)
+	}
+	fmt.Println("PreAuthForm marshaled successfully with key: " + key)
+
 	err = stub.PutState(key, jsonAsBytes)
 
 	if err != nil {
 		return nil, errors.New("Received unknown function invocation: ")
 	}
-
+	fmt.Println("PreAuthForm added successfully with key: " + key)
 	return []byte(key), nil
 }
 
