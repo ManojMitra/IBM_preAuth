@@ -303,10 +303,8 @@ func (t *SimpleChaincode) writeStruct(stub shim.ChaincodeStubInterface, structNa
 		}
 	}
 
-	var a []byte
-	copy(a[:], key)
-	fmt.Println("key:", []byte(key), "a:", a)
-	return a, nil
+	retVal := []byte(key)
+	return retVal, nil
 }
 
 // Read from chaincode method
