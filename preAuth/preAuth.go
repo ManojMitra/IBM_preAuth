@@ -96,14 +96,14 @@ func (t *SimpleChaincode) writeDummyProvider(stub shim.ChaincodeStubInterface) (
 	a := []string{"John Smith", "XYZ Capitol avenue NY", "22322", "112-223-22222", "112-223-22223", "Susan Smith"}
 	t.write(stub, a)
 
-	b := []string{"Steven Foss", "ABC Capitol avenue NY", "22321", "112-223-33333", "112-223-33334", "Susan Smith"}
+	/*b := []string{"Steven Foss", "ABC Capitol avenue NY", "22321", "112-223-33333", "112-223-33334", "Susan Smith"}
 	t.write(stub, b)
 
 	c := []string{"Tad Harison", "ABC Capitol avenue NY", "22323", "112-223-33344", "112-223-33345", "Robert Smith"}
 	t.write(stub, c)
 
 	d := []string{"Albert", "ABC Capitol avenue NY", "22323", "112-223-33355", "112-223-33356", "Robert Smith"}
-	t.write(stub, d)
+	t.write(stub, d)*/
 
 	return nil, nil
 }
@@ -148,12 +148,14 @@ func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string)
 	preAuth.PreAuthStatus = "Submitted"
 
 	if len(args) == 6 {
-		rcvdKey, err = t.writeStruct(stub, "writeProvider", args)
-		if err != nil {
+		rcvdKey, err1 := t.writeStruct(stub, "writeProvider", args)
+		if err1 != nil {
 			jsonResp = "{\"Error\":\"Failed to perform operation}"
 			return nil, errors.New(jsonResp)
 		}
+		fmt.Println("rcvdKeya: ", rcvdKey)
 		readKey := fmt.Sprintf("%s", rcvdKey)
+		fmt.Println("readKey: ", readKey)
 		chaincodeObj, err = t.readStruct(stub, "readProvider", readKey)
 		buf := bytes.NewReader(chaincodeObj)
 		var p Provider
@@ -304,8 +306,6 @@ func (t *SimpleChaincode) writeStruct(stub shim.ChaincodeStubInterface, structNa
 	}
 
 	retVal := []byte(key)
-	fmt.Println("key ->" + key + " retVal ->")
-	fmt.Printf(string(retVal))
 	return retVal, nil
 }
 
