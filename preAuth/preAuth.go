@@ -304,6 +304,8 @@ func (t *SimpleChaincode) writeStruct(stub shim.ChaincodeStubInterface, structNa
 	}
 
 	retVal := []byte(key)
+	fmt.Println("key ->" + key + " retVal ->")
+	fmt.Printf(string(retVal))
 	return retVal, nil
 }
 
