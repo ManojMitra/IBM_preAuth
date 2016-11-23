@@ -347,9 +347,10 @@ func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, function string
 // Read from chaincode structure
 func (t *SimpleChaincode) readStruct(stub shim.ChaincodeStubInterface, structName string, arg string) ([]byte, error) {
 	fmt.Println("Read called for " + structName)
-	var key, jsonResp string
+	var jsonResp string
 	var err error
 
+	key := arg
 	fmt.Println("Reading for key: " + key)
 	valAsbytes, err := stub.GetState(key)
 	if err != nil {
