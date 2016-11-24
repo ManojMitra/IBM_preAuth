@@ -1,8 +1,6 @@
 package main
 
 import (
-	"bytes"
-	"encoding/binary"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -143,7 +141,7 @@ func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string)
 	key = "PA" + strconv.Itoa(rand.Intn(10000000))
 	fmt.Println("PreAuth Key is: " + key)
 
-	preAuth := &PreAuthForm{}
+	preAuth := PreAuthForm{}
 	preAuth.PreAuthID = key
 	preAuth.PreAuthStatus = "Submitted"
 
@@ -157,10 +155,9 @@ func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string)
 		readKey := fmt.Sprintf("%s", rcvdKey)
 		fmt.Println("readKey: ", readKey)
 		chaincodeObj, err = t.readStruct(stub, "readProvider", readKey)
-		buf := bytes.NewReader(chaincodeObj)
-		var p Provider
-		err := binary.Read(buf, binary.LittleEndian, &p)
 
+		var p Provider
+		err := json.Unmarshal(chaincodeObj, &p)
 		if err != nil {
 			jsonResp = "{\"Error\":\"Failed to perform operation}"
 			return nil, errors.New(jsonResp)
@@ -174,9 +171,9 @@ func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string)
 		}
 		readKey := fmt.Sprintf("%s", rcvdKey)
 		chaincodeObj, err = t.readStruct(stub, "readMember", readKey)
-		buf := bytes.NewReader(chaincodeObj)
+
 		var mem Member
-		err := binary.Read(buf, binary.LittleEndian, &mem)
+		err := json.Unmarshal(chaincodeObj, &mem)
 
 		if err != nil {
 			jsonResp = "{\"Error\":\"Failed to perform operation}"
@@ -191,9 +188,9 @@ func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string)
 		}
 		readKey := fmt.Sprintf("%s", rcvdKey)
 		chaincodeObj, err = t.readStruct(stub, "readService", readKey)
-		buf := bytes.NewReader(chaincodeObj)
+
 		var srv Service
-		err := binary.Read(buf, binary.LittleEndian, &srv)
+		err := json.Unmarshal(chaincodeObj, &srv)
 
 		if err != nil {
 			jsonResp = "{\"Error\":\"Failed to perform operation}"
@@ -208,9 +205,9 @@ func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string)
 		}
 		readKey := fmt.Sprintf("%s", rcvdKey)
 		chaincodeObj, err = t.readStruct(stub, "readPayer", readKey)
-		buf := bytes.NewReader(chaincodeObj)
+
 		var pyr Payer
-		err := binary.Read(buf, binary.LittleEndian, &pyr)
+		err := json.Unmarshal(chaincodeObj, &pyr)
 
 		if err != nil {
 			jsonResp = "{\"Error\":\"Failed to perform operation}"
@@ -371,7 +368,7 @@ func (t *SimpleChaincode) readStruct(stub shim.ChaincodeStubInterface, structNam
 			jsonResp = "{\"Error\":\"Failed to get Provider for " + key + "\"}"
 			return nil, errors.New(jsonResp)
 		}
-		fmt.Println("Provider fetched successfully with key: ")
+		fmt.Println("Provider fetched successfully with key: " + key)
 	} else if structName == "readMember" {
 		var m Member
 		err = json.Unmarshal(valAsbytes, &m)
@@ -387,7 +384,7 @@ func (t *SimpleChaincode) readStruct(stub shim.ChaincodeStubInterface, structNam
 			jsonResp = "{\"Error\":\"Failed to get Service for " + key + "\"}"
 			return nil, errors.New(jsonResp)
 		}
-		fmt.Println("Service fetched successfully with key: ")
+		fmt.Println("Service fetched successfully with key: " + key)
 	} else if structName == "readPayer" {
 		var pyr Payer
 		err = json.Unmarshal(valAsbytes, &pyr)
@@ -395,11 +392,10 @@ func (t *SimpleChaincode) readStruct(stub shim.ChaincodeStubInterface, structNam
 			jsonResp = "{\"Error\":\"Failed to get Payer for " + key + "\"}"
 			return nil, errors.New(jsonResp)
 		}
-		fmt.Println("Payer fetched successfully with key: ")
+		fmt.Println("Payer fetched successfully with key: " + key)
 	} else {
 		return nil, errors.New("Received unknown structure or key in query: " + structName + ":" + key)
 	}
 
-	fmt.Print(key + " : " + string(valAsbytes))
 	return valAsbytes, nil
 }
