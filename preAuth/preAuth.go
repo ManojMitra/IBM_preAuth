@@ -137,6 +137,7 @@ func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string)
 	var key, jsonResp string
 	var err error
 	var rcvdKey, chaincodeObj []byte
+	objCreated := false
 
 	key = "PA" + strconv.Itoa(rand.Intn(10000000))
 	fmt.Println("PreAuth Key is: " + key)
@@ -145,7 +146,8 @@ func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string)
 	preAuth.PreAuthID = key
 	preAuth.PreAuthStatus = "Submitted"
 
-	if len(args) == 6 {
+	if len(args) >= 6 {
+		objCreated = true
 		rcvdKey, err1 := t.writeStruct(stub, "writeProvider", args)
 		if err1 != nil {
 			jsonResp = "{\"Error\":\"Failed to perform operation}"
@@ -163,7 +165,10 @@ func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string)
 			return nil, errors.New(jsonResp)
 		}
 		preAuth.PreAuthProvider = p
-	} else if len(args) == 10 {
+	}
+
+	if len(args) >= 10 {
+		objCreated = true
 		rcvdKey, err = t.writeStruct(stub, "writeProvider", args[5:9])
 		if err != nil {
 			jsonResp = "{\"Error\":\"Failed to perform operation}"
@@ -180,7 +185,10 @@ func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string)
 			return nil, errors.New(jsonResp)
 		}
 		preAuth.PreAuthMember = mem
-	} else if len(args) == 22 {
+	}
+
+	if len(args) >= 22 {
+		objCreated = true
 		rcvdKey, err = t.writeStruct(stub, "writeService", args[10:21])
 		if err != nil {
 			jsonResp = "{\"Error\":\"Failed to perform operation}"
@@ -197,7 +205,10 @@ func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string)
 			return nil, errors.New(jsonResp)
 		}
 		preAuth.PreAuthService = srv
-	} else if len(args) == 31 {
+	}
+
+	if len(args) >= 31 {
+		objCreated = true
 		rcvdKey, err = t.writeStruct(stub, "writePayer", args[22:30])
 		if err != nil {
 			jsonResp = "{\"Error\":\"Failed to perform operation}"
@@ -214,7 +225,9 @@ func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string)
 			return nil, errors.New(jsonResp)
 		}
 		preAuth.PreAuthPayer = pyr
-	} else {
+	}
+
+	if objCreated == false {
 		return nil, errors.New("Incorrect number of arguments received.")
 	}
 	jsonAsBytes, err1 := json.Marshal(preAuth)
