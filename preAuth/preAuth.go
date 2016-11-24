@@ -65,10 +65,10 @@ type Payer struct {
 type PreAuthForm struct {
 	PreAuthID       string   `json:"preauthid"`
 	PreAuthStatus   string   `json:"preauthstatus"`
-	PreAuthProvider Provider `json:"Provider"`
-	PreAuthMember   Member   `json:"Member"`
-	PreAuthService  Service  `json:"Service"`
-	PreAuthPayer    Payer    `json:"Payer"`
+	PreAuthProvider Provider `json:"provider"`
+	PreAuthMember   Member   `json:"member"`
+	PreAuthService  Service  `json:"service"`
+	PreAuthPayer    Payer    `json:"payer"`
 }
 
 // ============================================================================================================================
