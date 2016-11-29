@@ -94,14 +94,14 @@ func (t *SimpleChaincode) writeDummyProvider(stub shim.ChaincodeStubInterface) (
 	a := []string{"John Smith", "XYZ Capitol avenue NY", "22322", "112-223-22222", "112-223-22223", "Susan Smith"}
 	t.write(stub, a)
 
-	/*b := []string{"Steven Foss", "ABC Capitol avenue NY", "22321", "112-223-33333", "112-223-33334", "Susan Smith"}
+	b := []string{"Steven Foss", "ABC Capitol avenue NY", "22321", "112-223-33333", "112-223-33334", "Susan Smith"}
 	t.write(stub, b)
 
 	c := []string{"Tad Harison", "ABC Capitol avenue NY", "22323", "112-223-33344", "112-223-33345", "Robert Smith"}
 	t.write(stub, c)
 
 	d := []string{"Albert", "ABC Capitol avenue NY", "22323", "112-223-33355", "112-223-33356", "Robert Smith"}
-	t.write(stub, d)*/
+	t.write(stub, d)
 
 	return nil, nil
 }
