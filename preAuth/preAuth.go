@@ -87,7 +87,8 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	if len(args) != 1 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 1")
 	}
-	return t.writeDummyProvider(stub)
+	//return t.writeDummyProvider(stub)
+	return nil, nil
 }
 
 func (t *SimpleChaincode) writeDummyProvider(stub shim.ChaincodeStubInterface) ([]byte, error) {
